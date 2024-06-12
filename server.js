@@ -5,7 +5,7 @@ const cors = require('cors');
 
 // Connect to MongoDB
 // i have used my local mongodb connection (compass) to connect to the database
-mongoose.connect('mongodb://localhost:27017/ArcGis', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/ArcGis');
 
 const app = express();
 app.use(bodyParser.json());
@@ -37,6 +37,17 @@ app.post('/api/save-feature', async (req, res) => {
       res.status(500).send(error.message);
     }
   });
+
+  app.post('/api/save-graphic', async (req, res) => {
+    console.log("graphic edit request");
+    try {
+      console.log(req.body);
+      res.status(201);  
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  });
+
 
 // Start the server
 app.listen(5000, () => {

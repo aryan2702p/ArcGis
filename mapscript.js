@@ -192,9 +192,8 @@ require([
     addFeatureForm.addEventListener("submit", (event) => {
         event.preventDefault();
         const name = document.getElementById("name").value;
-
         if (clickedCoordinates && name) {
-            const graphic = new Graphic({
+            const graphic   = new Graphic({
                 geometry: {
                     type: "point",
                     latitude: clickedCoordinates.latitude,
@@ -204,8 +203,26 @@ require([
                     Name: name,
                     Type: "National Monument"
                 }
+                
             });
+            const graphicObject = {
+                geometry: {
+                    type: "point",
+                    latitude: clickedCoordinates.latitude,
+                    longitude: clickedCoordinates.longitude
+                },
+                attributes: {
+                    Name: name,
+                    Type: "National Monument"
+                }
+            };
+            
+            const graphicJSON = JSON.stringify(graphicObject);
+            //mongo d
 
+
+            saveEditedGraphic(graphicJSON);
+            
             const addEdits = {
                 addFeatures: [graphic]
             };
@@ -217,6 +234,7 @@ require([
             alert("Please click on the map to get coordinates and enter a name.");
         }
     });
+    
 
     addBtn.addEventListener("click", addInitialFeatures);
     removeBtn.addEventListener("click", removeFeatures);
@@ -298,6 +316,23 @@ require([
             console.log('Layer saved:', data);
         } catch (error) {
             console.error('Error saving layer data:', error);
+        }
+    }
+
+    async function saveEditedGraphic(graphicJSON){
+        console.log("saveLayerData function called");
+        try {
+            const response = await fetch('http://localhost:5000/api/save-graphic', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: graphicJSON 
+            });
+            const data = await response.json();
+            console.log('Saving new Graphic:', data);
+        } catch (error) {
+            console.error('Error saving graphic data:', error);
         }
     }
 });
