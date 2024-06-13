@@ -1,3 +1,4 @@
+
 require([
     "esri/Map",
     "esri/views/MapView",
@@ -217,11 +218,11 @@ require([
                 }
             };
             
-            const graphicJSON = JSON.stringify(graphicObject);
+            //const graphicJSON = JSON.stringify(graphicObject);
             //mongo d
 
 
-            saveEditedGraphic(graphicJSON);
+            saveEditedGraphic(graphicObject);
             
             const addEdits = {
                 addFeatures: [graphic]
@@ -319,7 +320,7 @@ require([
         }
     }
 
-    async function saveEditedGraphic(graphicJSON){
+    async function saveEditedGraphic(graphicObject){
         console.log("saveLayerData function called");
         try {
             const response = await fetch('http://localhost:5000/api/save-graphic', {
@@ -327,7 +328,7 @@ require([
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: graphicJSON 
+                body: JSON.stringify(graphicObject),
             });
             const data = await response.json();
             console.log('Saving new Graphic:', data);

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const {Authrouter} = require('./Routes/auth');
 
 // Connect to MongoDB
 // i have used my local mongodb connection (compass) to connect to the database
@@ -22,7 +23,35 @@ const featureLayerSchema = new mongoose.Schema({
       default: Date.now,
     },
   });
-  
+  const GraphicObjectSchema = new mongoose.Schema({
+    geometry: {
+        type: {
+            type: String,
+            enum: ['point'],
+            required: true
+        },
+        latitude: {
+            type: Number,
+            required: true
+        },
+        longitude: {
+            type: Number,
+            required: true
+        }
+    },
+    attributes: {
+        Name: {
+            type: String,
+            required: true
+        },
+        Type: {
+            type: String,
+            enum: ['National Monument'],
+            required: true
+        }
+    }
+});
+ const GraphicObject = mongoose.model('GraphicObject', GraphicObjectSchema);
   const FeatureLayer = mongoose.model('FeatureLayer', featureLayerSchema);
 // Endpoint to save modified features
 app.post('/api/save-feature', async (req, res) => {
@@ -40,12 +69,11 @@ app.post('/api/save-feature', async (req, res) => {
 
   app.post('/api/save-graphic', async (req, res) => {
     console.log("graphic edit request");
-    try {
-      console.log(req.body);
-      res.status(201);  
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
+    const newGraphic = new GraphicObject(req.body);
+
+    newGraphic.save()
+        .then(graphic => res.json(graphic))
+        .catch(err => res.status(400).json({ error: err.message }));
   });
 
 
@@ -53,3 +81,5 @@ app.post('/api/save-feature', async (req, res) => {
 app.listen(5000, () => {
     console.log('Server running on port 5000');
 });
+
+app.use('/auth',Authrouter.router);
