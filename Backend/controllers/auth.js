@@ -28,7 +28,10 @@ exports.createUser = async (req, res) => {
           else{
             const user = new User({ ...req.body, password: hashedPassword, salt });
             const doc = await user.save();
-            res.status(200).json({ id: user._id });
+            console.log(req.session.id);
+            req.session.userId = doc._id;
+
+            res.status(200).json({ id: doc._id });
           }
 
          
@@ -64,7 +67,10 @@ exports.loginUser = async (req, res) => {
           }
 
           if (crypto.timingSafeEqual(user.password, hashedPassword)) {
-            res.status(200).json({ id: user.id, role: user.role ,points : user.points});
+            console.log(req.session.id);
+            req.session.userId = user._id;
+            res.status(200).json({ id: user._id});
+
             console.log(user.id)
           } else {
             res.status(401).json({ message: 'Invalid credentials' });
