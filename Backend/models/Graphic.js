@@ -27,7 +27,8 @@ const GraphicObjectSchema = new mongoose.Schema({
             enum: ['National Monument'],
             required: true
         }
-    }
+    },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 exports.GraphicObject=mongoose.model('Graphics',GraphicObjectSchema);

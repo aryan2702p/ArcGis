@@ -15,3 +15,16 @@ exports.saveLayer=async (req, res)=>{
       }
 
 }
+
+exports.GetLayer=async (req, res)=>{
+  const {id} = req.params;
+  try {
+      const layer = await featureLayer.findById(id);
+      res.status(200).json(layer);
+      console.log("layer Fetched")
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error.message);
+    }
+
+}
