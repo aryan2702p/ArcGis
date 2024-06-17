@@ -16,6 +16,7 @@ const params = getQueryParams();
 const userId = params.userId;
 
 if (!userId) {
+    console.log("Unauthorized access Please login");
     window.location.href = 'login.html';
 } else {
 
@@ -244,7 +245,7 @@ if (!userId) {
                         Name: name,
                         Type: "National Monument"
                     },
-                    userId: userId,
+                    user: userId,
                 };
 
                 //const graphicJSON = JSON.stringify(graphicObject);
@@ -266,7 +267,7 @@ if (!userId) {
         });
 
 
-        addBtn.addEventListener("click", addFeatures(initialData));
+        addBtn.addEventListener("click", addInitialFeatures);
         addUsersBtn.addEventListener("click", addFeatures(user_graphics));
         removeBtn.addEventListener("click", removeFeatures);
 
@@ -279,8 +280,20 @@ if (!userId) {
             document.getElementById("longitude").value = lon;
         });
 
-        function addFeatures(data) {
-            const graphics = data.map(data => new Graphic(data));
+        function addInitialFeatures() {
+            const graphics = initialData.map(data => new Graphic(data));
+            const addEdits = {
+                addFeatures: graphics
+            };
+            applyEditsToLayer(addEdits);
+        }
+
+        function addFeatures(graphic_data) {
+            console.log("user Graphic data",graphic_data)
+           // Convert to array explicitly
+           const dataArray = Array.isArray(graphic_data) ? graphic_data : Array.from(graphic_data);
+
+            const graphics = dataArray.map(data => new Graphic(data));
             const addEdits = {
                 addFeatures: graphics
             };
@@ -344,9 +357,9 @@ if (!userId) {
                     },
                     body: JSON.stringify({ data: monumentLayer.toJSON() })
                 });
-                if(response.status === 401){
-                    window.location.href = 'login.html';
-                }
+                // if(response.status === 401){
+                //     window.location.href = 'login.html';
+                // }
                 const data = await response.json();
                 console.log('Layer saved:', data);
             } catch (error) {
@@ -355,7 +368,7 @@ if (!userId) {
         }
 
         async function saveEditedGraphic(graphicObject) {
-            console.log("saveLayerData function called");
+            console.log("save graphic function called");
             try {
                 const response = await fetch('http://localhost:5000/api/save-graphic', {
                     method: 'POST',
@@ -370,28 +383,28 @@ if (!userId) {
                 const data = await response.json();
                 console.log('Saving new Graphic:', data);
             } catch (error) {
-                console.error('Error saving graphic data:', error);
+                console.log('Error saving graphic data:', error);
             }
         }
 
         async function fetchGraphicsByUserId(userId) {
             console.log("Fetching Graphics by userId");
             try {
-                const response = await fetch(`http://localhost:5000/api/save-graphic/${userId}`, {
+                const response = await fetch('http://localhost:5000/api/save-graphic/'+userId, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     }
                     
                 });
-                if(response.status === 401){
-                    window.location.href = 'login.html';
-                }
+                // if(response.status === 401){
+                //     window.location.href = 'login.html';
+                // }
                 const data = await response.json();
                 console.log('Graphics fetched', data);
                 return data;
             } catch (error) {
-                console.error('Error saving graphic data:', error);
+                console.log('Error saving graphic data:', error);
             }
             
         }
