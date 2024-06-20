@@ -288,7 +288,7 @@ if (!userId) {
             applyEditsToLayer(addEdits);
         }
 
-        function addFeatures(graphic_data) {
+        async function addFeatures(graphic_data) {
             console.log("user Graphic data",graphic_data)
            // Convert to array explicitly
            const dataArray = Array.isArray(graphic_data) ? graphic_data : Array.from(graphic_data);
@@ -387,7 +387,7 @@ if (!userId) {
             }
         }
 
-        async function fetchGraphicsByUserId(userId) {
+        async function fetchGraphicsByUserId(userId) { 
             console.log("Fetching Graphics by userId");
             try {
                 const response = await fetch('http://localhost:5000/api/save-graphic/'+userId, {

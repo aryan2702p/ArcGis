@@ -21,7 +21,7 @@ async function login_user(data) {
             body: JSON.stringify(data)
         });
         const response_data = await response.json();
-        console.log('Layer saved:', response_data);
+        console.log('user logged in ', response_data);
         const userId = response_data.id; // Adjust according to your server response
 
         // Redirect to index.html with userId as a query parameter

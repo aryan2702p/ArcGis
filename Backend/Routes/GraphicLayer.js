@@ -1,9 +1,9 @@
 const express = require('express');
-const {saveLayer}= require('../controllers/featureLayer');
+const {saveLayer}= require('../controllers/GraphicLayers');
 
 const router = express.Router();
 
-const authMiddleware = require('../middlewares/authMiddleware');
+//const authMiddleware = require('../middlewares/authMiddleware');
 
 
 // router.use(authMiddleware);

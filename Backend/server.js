@@ -9,6 +9,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const Authrouter = require('./Routes/auth');
 const FeatureRouter= require('./Routes/FeatureLayer');
 const GraphicRouter= require('./Routes/Graphics');
+const GraphicLayerRouter= require('./Routes/GraphicLayer');
 //const path= require('path');
 
 // Connect to MongoDB
@@ -16,7 +17,7 @@ const GraphicRouter= require('./Routes/Graphics');
 mongoose.connect('mongodb://localhost:27017/ArcGis');
 
 const app = express();
-app.use(express.static('public'));
+// app.use(express.static('public'));
 app.use(cors({
   origin: 'http://127.0.0.1:5500', // Whitelist specific origin(s)
   methods: ['GET', 'POST'], // Allow specific HTTP methods
@@ -51,6 +52,7 @@ app.use(session({
   app.use('/auth',Authrouter.router);
   app.use('/api/save-feature',FeatureRouter.router);
   app.use('/api/save-graphic', GraphicRouter.router);
+  app.use('/api/save-graphicLayer', GraphicLayerRouter.router);
 
   // Set session data
 app.get('/set-session', (req, res) => {

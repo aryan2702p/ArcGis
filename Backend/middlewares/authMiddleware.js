@@ -1,7 +1,10 @@
 module.exports = function (req, res, next) {
-    if (req.session.userId) {
+    console.log("checking session");
+     if (req.session.userId) {
       return next();
     } else {
+         console.log("session error");
+         
          return res.status(401);
     }
   };
