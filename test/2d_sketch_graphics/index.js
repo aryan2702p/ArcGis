@@ -1,3 +1,19 @@
+function getQueryParams() {
+    const queryParamsString = window.location.search;
+    const searchParams = new URLSearchParams(queryParamsString);
+    const queryParams = {};
+
+    // Iterate over each parameter and add it to the queryParams object
+    for (const [key, value] of searchParams.entries()) {
+        queryParams[key] = value;
+    }
+
+    return queryParams;
+}
+
+// Usage example
+const params = getQueryParams();
+const userId = params.userId || 1;
 
 require([
   "esri/widgets/Sketch/SketchViewModel",
@@ -309,7 +325,7 @@ require([
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ data: graphicsLayer.toJSON() })
+            body: JSON.stringify({ data: graphicsLayer.graphics.toJSON(), userId: userId })
         });
         // if(response.status === 401){
         //     window.location.href = 'login.html';

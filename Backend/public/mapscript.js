@@ -268,7 +268,7 @@ if (!userId) {
 
 
         addBtn.addEventListener("click", addInitialFeatures);
-        addUsersBtn.addEventListener("click", addFeatures(user_graphics));
+        addUsersBtn.addEventListener("click", addFeatures);
         removeBtn.addEventListener("click", removeFeatures);
 
         view.on("click", (event) => {
@@ -288,11 +288,11 @@ if (!userId) {
             applyEditsToLayer(addEdits);
         }
 
-        async function addFeatures(graphic_data) {
-            console.log("user Graphic data",graphic_data)
+        async function addFeatures() {
+            
            // Convert to array explicitly
-           const dataArray = Array.isArray(graphic_data) ? graphic_data : Array.from(graphic_data);
-
+           
+            const dataArray = await fetchGraphicsByUserId(userId);
             const graphics = dataArray.map(data => new Graphic(data));
             const addEdits = {
                 addFeatures: graphics
