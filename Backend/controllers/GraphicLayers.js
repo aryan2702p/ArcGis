@@ -5,6 +5,7 @@ exports.saveLayer=async (req, res)=>{
         const newLayer = new GraphicLayer
         ({
           data: req.body.data,
+          user: req.body.userId,
         });
         await newLayer.save();
         res.status(201).send(newLayer);
@@ -17,11 +18,12 @@ exports.saveLayer=async (req, res)=>{
 }
 
 exports.GetLayer=async (req, res)=>{
-  const {id} = req.params;
+  const {userId} = req.params;
   try {
-      const layer = await GraphicLayer.findById(id);
+    console.log("userId: " + userId);
+      const layer = await GraphicLayer.find({ user: userId });
       res.status(200).json(layer);
-      console.log("layer Fetched")
+      console.log("layer Fetched",layer);
     } catch (error) {
       console.log(error);
       res.status(500).send(error.message);

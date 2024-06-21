@@ -8,6 +8,6 @@ const router = express.Router();
 
 // router.use(authMiddleware);
 router.post('/', saveLayer)
-router.gets('/', GetLayer )
+router.get('/:userId', GetLayer )
 
 exports.router = router;
