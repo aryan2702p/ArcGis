@@ -20,7 +20,7 @@ const app = express();
 // app.use(express.static('public'));
 app.use(cors({
   origin: 'http://127.0.0.1:5500', // Whitelist specific origin(s)
-  methods: ['GET', 'POST'], // Allow specific HTTP methods
+  methods: ['GET', 'POST','PUT'], // Allow specific HTTP methods
   credentials: true // Allow credentials (cookies, authorization headers)
 }));
 app.use(bodyParser.json());

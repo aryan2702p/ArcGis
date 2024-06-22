@@ -30,3 +30,20 @@ exports.GetLayer=async (req, res)=>{
     }
 
 }
+
+exports.UpdateLayer= async(req, res)=>{
+  try {
+    const layer = await GraphicLayer.findOneAndUpdate(
+      { user: req.body.userId },
+      { $set: { data: req.body.data } },
+      { new: true, upsert: true } // Create document if it doesn't exist
+    );
+    res.status(200).json(layer);
+
+    console.log('Updated GraphicLayer:', layer);
+  } catch (err) {
+    console.error('Error updating GraphicLayer:', err);
+    res.status(500).send(err.message);
+
+  }
+}

@@ -1,5 +1,5 @@
 const express = require('express');
-const {saveLayer,GetLayer}= require('../controllers/GraphicLayers');
+const {saveLayer,GetLayer,UpdateLayer}= require('../controllers/GraphicLayers');
 
 const router = express.Router();
 
@@ -9,5 +9,6 @@ const router = express.Router();
 // router.use(authMiddleware);
 router.post('/', saveLayer)
 router.get('/:userId', GetLayer )
+router.put('/',UpdateLayer)
 
 exports.router = router;
