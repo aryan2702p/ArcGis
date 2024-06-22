@@ -80,7 +80,7 @@ else{
 
       
     }
-    addUserGraphicsToLayer();
+    //addUserGraphicsToLayer();
 
    
   
@@ -120,7 +120,9 @@ else{
       //   selectFeatures(event.graphic.geometry);
       console.log("event.graphic.geometry", event.graphic.geometry);
       console.log("graphic layer", graphicsLayer);
-      saveLayerData();
+      UpdateLayerData();
+
+      //saveLayerData();
   
   }
      
@@ -391,6 +393,26 @@ else{
           console.error('Error saving layer data:', error);
       }
   }
+
+  async function UpdateLayerData() {
+    console.log("UpdateLayerData function called");
+    try {
+        const response = await fetch('http://localhost:5000/api/save-graphicLayer', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data: graphicsLayer.graphics.toJSON(), userId: userId })
+        });
+        // if(response.status === 401){
+        //     window.location.href = 'login.html';
+        // }
+        const data = await response.json();
+        console.log('Layer updated:', data);
+    } catch (error) {
+        console.error('Error updated layer data:', error);
+    }
+}
 
  
   });
