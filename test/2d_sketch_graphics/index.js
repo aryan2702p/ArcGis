@@ -64,14 +64,12 @@ else{
   }  
 
     async function addUserGraphicsToLayer(){
-      const graphics = await fetchGraphicsByUserId(userId);
-      console.log(" User graphics fetched", graphics);
-      if(graphics){
-      //   const graphic = graphics.map(obj => new Graphic(obj.data));
-      // // graphics.data.forEach(graphic => {
-      // //   graphicsLayer.add(graphic.data);
-      // // });
-      //   graphicsLayer.addMany(graphic);
+      const graphicsJSON = await fetchGraphicsByUserId(userId);
+      console.log(" User graphics fetched", graphicsJSON[0]);
+      if(graphicsJSON){
+        graphicsJSON[0].data.forEach((feature) => {
+          graphicsLayer.add(Graphic.fromJSON(feature));
+        });
       console.log("Graphics found")
 
       }else{
@@ -80,17 +78,15 @@ else{
 
       
     }
-    //addUserGraphicsToLayer();
+    addUserGraphicsToLayer();
 
    
   
   
-  // graphicsLayer.on("graphic-update", (event) => {
-  //     console.log("Graphic updated:", event.graphic);
-  // });
+
   
     const map = new Map({
-      basemap: "gray-vector",
+      basemap: "hybrid",
       layers: [graphicsLayer]
     });
   
@@ -121,7 +117,7 @@ else{
       console.log("event.graphic.geometry", event.graphic.geometry);
       console.log("graphic layer", graphicsLayer);
       UpdateLayerData();
-
+       //saveLayerData();
       //saveLayerData();
   
   }
@@ -382,7 +378,7 @@ else{
               headers: {
                   'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ data: graphicsLayer.graphics.toJSON(), userId: userId })
+              body: JSON.stringify({ data: graphicsLayer.toJSON(), userId: userId })
           });
           // if(response.status === 401){
           //     window.location.href = 'login.html';
