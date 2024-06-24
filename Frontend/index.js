@@ -70,7 +70,7 @@ else{
         graphicsJSON[0].data.forEach((feature) => {
           graphicsLayer.add(Graphic.fromJSON(feature));
         });
-      console.log("Graphics found")
+      console.log("Graphics added to the layer")
 
       }else{
         console.log("No graphics found for user", userId);
@@ -105,20 +105,13 @@ else{
     
   
     sketchVM.on("create", function(event) {
-      // check if the create event's state has changed to complete indicating
-      // the graphic create operation is completed.
+      
       if (event.state === "complete") {
-      //   // remove the graphic from the layer. Sketch adds
-      //   // the completed graphic to the layer by default.
-      //   polygonGraphicsLayer.remove(event.graphic);
-    
-      //   // use the graphic.geometry to query features that intersect it
-      //   selectFeatures(event.graphic.geometry);
+      
       console.log("event.graphic.geometry", event.graphic.geometry);
       console.log("graphic layer", graphicsLayer);
       UpdateLayerData();
-       //saveLayerData();
-      //saveLayerData();
+       
   
   }
      
