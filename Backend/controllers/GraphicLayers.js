@@ -33,9 +33,20 @@ exports.GetLayer=async (req, res)=>{
 
 exports.UpdateLayer= async(req, res)=>{
   try {
+    const totalCost = parseFloat(req.body.total_cost);
+
+    if (isNaN(totalCost)) {
+      return res.status(400).send('Invalid total_cost value');
+    }
+
+    const updateData = {
+      data: req.body.data,
+      total_cost: totalCost
+    };
+    console.log("layer data",req.body)
     const layer = await GraphicLayer.findOneAndUpdate(
       { user: req.body.userId },
-      { $set: { data: req.body.data } },
+      { $set: updateData },
       { new: true, upsert: true } // Create document if it doesn't exist
     );
     res.status(200).json(layer);

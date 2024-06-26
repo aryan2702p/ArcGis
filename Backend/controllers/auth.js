@@ -85,5 +85,18 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.checkUser = async (req, res) => {
-  res.json({status:'success',user: req.user});
+ const {userId}= req.params;
+ try {
+  const user = await User.findOne({ _id: userId }).exec();
+  if(!user){
+    res.status(404).json({ message: 'No user found' });
+  }else{
+    res.status(200).json({ message: 'OK' });
+  }
+  
+ } catch (error) {
+  res.status(error.status).json({ message: error.message });
+  
+ }
+
 };

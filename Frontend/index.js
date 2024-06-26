@@ -10,11 +10,32 @@ function getQueryParams() {
 
     return queryParams;
 }
-
-// Usage example
 const params = getQueryParams();
 const userId = params.userId;
-console.log(userId);
+
+async function CheckAuthorize(){
+
+   try {
+    const response = await fetch('http://localhost:5000/auth/'+userId,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if(response.status!==200){
+        console.log("Unauthorized access Please login");
+        window.location.href = 'login.html';
+    }
+    
+    
+   } catch (error) {
+    console.log("Error",error);
+    window.location.href = 'login.html';
+    
+   }
+
+}
+
 
 
 if (!userId) {
@@ -22,6 +43,7 @@ if (!userId) {
   window.location.href = 'login.html';
 }
 else{
+  CheckAuthorize();
   require([
     "esri/widgets/Sketch/SketchViewModel",
     "esri/widgets/support/SnappingControls",
@@ -29,7 +51,8 @@ else{
     "esri/layers/GraphicsLayer",
     "esri/views/MapView",
     "esri/widgets/Expand",
-    "esri/Graphic"
+    "esri/Graphic",
+    "esri/geometry/geometryEngine"
   ], (
     SketchViewModel,
     SnappingControls,
@@ -37,54 +60,11 @@ else{
     GraphicsLayer,
     MapView,
     Expand,
-    Graphic
+    Graphic,
+    geometryEngine
   ) => {
     const graphicsLayer = new GraphicsLayer({ title: "graphicsLayer" });
-
-    async function fetchGraphicsByUserId(userId) { 
-      console.log("Fetching Graphics by userId");
-      try {
-          const response = await fetch('http://localhost:5000/api/save-graphicLayer/'+userId, {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-              
-          });
-          // if(response.status === 401){
-          //     window.location.href = 'login.html';
-          // }
-          const data = await response.json();
-          console.log('Graphics fetched', data);
-          return data;
-      } catch (error) {
-          console.log('Error saving graphic data:', error);
-      }
-      
-  }  
-
-    async function addUserGraphicsToLayer(){
-      const graphicsJSON = await fetchGraphicsByUserId(userId);
-      console.log(" User graphics fetched", graphicsJSON[0]);
-      if(graphicsJSON){
-        graphicsJSON[0].data.forEach((feature) => {
-          graphicsLayer.add(Graphic.fromJSON(feature));
-        });
-      console.log("Graphics added to the layer")
-
-      }else{
-        console.log("No graphics found for user", userId);
-      }
-
-      
-    }
-    addUserGraphicsToLayer();
-
    
-  
-  
-
-  
     const map = new Map({
       basemap: "hybrid",
       layers: [graphicsLayer]
@@ -102,26 +82,87 @@ else{
       layer: graphicsLayer
     });
 
+
+    const pointBtn = document.getElementById("pointBtn");
+    const polylineBtn = document.getElementById("polylineBtn");
+    const polygonBtn = document.getElementById("polygonBtn");
+    const circleBtn = document.getElementById("circleBtn");
+    const rectangleBtn = document.getElementById("rectangleBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const selectBtn = document.getElementById("selectBtn");
+    const geoarea=document.getElementById("geodesicArea");
+    let total_cost = 0;
+
+    async function fetchGraphicsByUserId(userId) { 
+      console.log("Fetching Graphics by userId");
+      try {
+          const response = await fetch('http://localhost:5000/api/save-graphicLayer/'+userId, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+              
+          });
+          
+          const data = await response.json();
+          console.log('Graphics fetched', data);
+          return data;
+      } catch (error) {
+          console.log('Error saving graphic data:', error);
+      }
+      
+  }  
+
+    async function addUserGraphicsToLayer(){
+      const graphicsJSON = await fetchGraphicsByUserId(userId);
+      console.log(" User graphics fetched", graphicsJSON[0]);
+      if(graphicsJSON[0]){
+        graphicsJSON[0].data.forEach((feature) => {
+          graphicsLayer.add(Graphic.fromJSON(feature));
+        });
+      console.log("Graphics added to the layer");
+      total_cost=graphicsJSON[0].total_cost;
+      geoarea.textContent = total_cost.toFixed(2); 
+      console.log("Total cost", total_cost);
+
+      }else{
+        console.log("No graphics found for user", userId);
+      }
+
+      
+    }
+    addUserGraphicsToLayer();
+
+
     
   
     sketchVM.on("create", function(event) {
       
       if (event.state === "complete") {
-      
-      console.log("event.graphic.geometry", event.graphic.geometry);
-      console.log("graphic layer", graphicsLayer);
-      UpdateLayerData();
+        var cost=0;
+        var geometry = event.graphic.geometry;
+        if (geometry.type === "polygon" || geometry.type === "circle") {
+          cost = computeAndDisplayArea(geometry);
+        } else if (geometry.type === "polyline" || geometry.type === "line") {
+         cost =  computeAndDisplayLength(geometry);
+        } else {
+          console.log("Geometry type not supported for area/length computation.");
+        }
+        console.log("cost: " + cost);
+        total_cost += Number(cost);
+        geoarea.textContent = total_cost.toFixed(2); 
+        UpdateLayerData();
        
   
   }
      
     });
 
-    // sketchVM.on("delete", function(event) {
-    //   event.graphics.forEach(function(graphic){
-    //     console.log("deleted", graphic)
-    //   });
-    // });
+    sketchVM.on("delete", function(event) {
+      event.graphics.forEach(function(graphic){
+        console.log("deleted", graphic)
+      });
+    });
   
   
   
@@ -174,13 +215,7 @@ else{
     view.ui.add(shortcutKeysExpand, "top-left");
   
     // Connecting the calcite actions with their corresponding SketchViewModel tools
-    const pointBtn = document.getElementById("pointBtn");
-    const polylineBtn = document.getElementById("polylineBtn");
-    const polygonBtn = document.getElementById("polygonBtn");
-    const circleBtn = document.getElementById("circleBtn");
-    const rectangleBtn = document.getElementById("rectangleBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const selectBtn = document.getElementById("selectBtn");
+  
   
     pointBtn.onclick = () => { sketchVM.create("point"); }
     polylineBtn.onclick = () => { sketchVM.create("polyline"); }
@@ -391,7 +426,7 @@ else{
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ data: graphicsLayer.graphics.toJSON(), userId: userId })
+            body: JSON.stringify({ data: graphicsLayer.graphics.toJSON(), userId: userId , total_cost: total_cost})
         });
         // if(response.status === 401){
         //     window.location.href = 'login.html';
@@ -401,6 +436,42 @@ else{
     } catch (error) {
         console.error('Error updated layer data:', error);
     }
+}
+
+ // Function to compute and display area for polygons/circles
+ function computeAndDisplayArea(geometry) {
+  var area;
+  var cost;
+  if (geometry.type === "polygon" || geometry.type === "circle") {
+    area = geometryEngine.geodesicArea(geometry, "square-kilometers");
+    cost=computeCost(area,10);
+    console.log("Area: " + area.toFixed(2) + " square kilometers");
+
+    return cost.toFixed(2);
+  } else {
+    console.log("Area computation is not applicable for this geometry type.");
+  }
+}
+
+// Function to compute and display length for lines/polylines
+function computeAndDisplayLength(geometry) {
+  var length;
+  var cost;
+  if (geometry.type === "polyline" || geometry.type === "line") {
+    length = geometryEngine.geodesicLength(geometry, "kilometers");
+    cost=computeCost(length,5);
+    console.log("Length: " + length.toFixed(2) + " kilometers");
+
+    return cost.toFixed(2);
+
+
+  } else {
+    console.log("Length computation is not applicable for this geometry type.");
+  }
+}
+
+function computeCost(dimension, factor){
+  return dimension * factor;
 }
 
  

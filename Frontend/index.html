@@ -34,12 +34,29 @@
     #headingBlock {
       padding-right: 2em;
     }
+    #areaResults {
+      position: absolute;
+      bottom: 20px;
+      left: 55vh;
+      height: 30px;
+      width:250px;
+      background-color: white;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    #geodesicArea, #planarArea {
+      margin-bottom: 5px;
+    }
   </style>
 
 </head>
 
 <body>
   <div id="viewDiv"></div>
+  <div id="areaResults">
+    Total Cost: <span id="geodesicArea"></span> USD
+  </div>
   <calcite-panel heading="SketchViewModel Styler" id="propPanel">
     <calcite-block id="headingBlock">
       <calcite-action icon="cursor" title="Select graphic" scale="s" slot="control" id="selectBtn"></calcite-action>

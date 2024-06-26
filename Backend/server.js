@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
+
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
@@ -10,10 +12,11 @@ const Authrouter = require('./Routes/auth');
 const FeatureRouter= require('./Routes/FeatureLayer');
 const GraphicRouter= require('./Routes/Graphics');
 const GraphicLayerRouter= require('./Routes/GraphicLayer');
-//const path= require('path');
 
+//const path= require('path');
 // Connect to MongoDB
 // i have used my local mongodb connection (compass) to connect to the database
+
 mongoose.connect('mongodb://localhost:27017/ArcGis');
 
 const app = express();
@@ -58,6 +61,17 @@ app.use(session({
 app.get('/set-session', (req, res) => {
   req.session.user = { username: 'exampleUser' };
   res.send('Session data set');
+});
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
+
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'signup.html'));
 });
 
 // Get session data

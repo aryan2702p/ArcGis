@@ -11,6 +11,7 @@ const GraphicLayerSchema = new mongoose.Schema({
       default: Date.now,
     },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    total_cost :{ type: Number, required: true },
 
   });
 
