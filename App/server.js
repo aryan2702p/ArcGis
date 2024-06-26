@@ -12,6 +12,9 @@ const Authrouter = require('./Routes/auth');
 const FeatureRouter= require('./Routes/FeatureLayer');
 const GraphicRouter= require('./Routes/Graphics');
 const GraphicLayerRouter= require('./Routes/GraphicLayer');
+const indexRouter= require('./Routes/static/index');
+const LoginRoter= require('./Routes/static/login');
+const SignupRouter= require('./Routes/static/signup');
 
 //const path= require('path');
 // Connect to MongoDB
@@ -52,33 +55,20 @@ app.use(session({
   },
 }));
 
+app.use(express.static(path.join(__dirname, 'public')));
+
+// static files route
+app.use('/', indexRouter.router);
+app.use('/login', LoginRoter.router);
+app.use('/signup', SignupRouter.router);
+
+
+
   app.use('/auth',Authrouter.router);
   app.use('/api/save-feature',FeatureRouter.router);
   app.use('/api/save-graphic', GraphicRouter.router);
   app.use('/api/save-graphicLayer', GraphicLayerRouter.router);
 
-  // Set session data
-app.get('/set-session', (req, res) => {
-  req.session.user = { username: 'exampleUser' };
-  res.send('Session data set');
-});
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'index.html'));
-});
-
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'login.html'));
-});
-
-app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'signup.html'));
-});
-
-// Get session data
-app.get('/get-session', (req, res) => {
-  const userData = req.session.user || 'No session data found';
-  res.send(userData);
-});
 
 
 // Start the server

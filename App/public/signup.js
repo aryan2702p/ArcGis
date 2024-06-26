@@ -1,19 +1,26 @@
 async function register_user(data) {
     console.log("saveLayerData function called");
     try {
-        const response = await fetch('http://localhost:5000/auth/signup', {
+        const response = await fetch('/auth/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         });
-        const response_data = await response.json();
-        console.log('user_saved:', response_data);
-        const userId = response_data.id; // Adjust according to your server response
+        if (response.ok) {
+            console.log("User logged in successfully.");
+            // Redirect to the index page
+            window.location.href = '/';
+          } else {
+            console.error('Login failed:', await response.json());
+          }
+        // const response_data = await response.json();
+        // console.log('user_saved:', response_data);
+        // const userId = response_data.id; // Adjust according to your server response
 
-        // Redirect to index.html with userId as a query parameter
-        window.location.href = `index.html?userId=${userId}`;
+        // // Redirect to index.html with userId as a query parameter
+        // window.location.href = `index.html?userId=${userId}`;
 
     } catch (error) {
         console.error('Error saving layer data:', error);

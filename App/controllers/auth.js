@@ -31,7 +31,7 @@ exports.createUser = async (req, res) => {
             console.log(req.session.id);
             req.session.userId = doc._id;
 
-            res.status(200).json({ id: doc._id });
+            return res.status(201).json({ message: 'Created successful' });
           }
 
          
@@ -69,9 +69,9 @@ exports.loginUser = async (req, res) => {
           if (crypto.timingSafeEqual(user.password, hashedPassword)) {
             console.log(req.session.id);
             req.session.userId = user._id;
-            res.status(200).json({ id: user._id});
-
-            console.log(user.id)
+            console.log("userId :",user.id);
+            return res.status(200).json({ message: 'Login successful' });
+            
           } else {
             res.status(401).json({ message: 'Invalid credentials' });
           }

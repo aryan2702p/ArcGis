@@ -1,49 +1,26 @@
-function getQueryParams() {
-    const queryParamsString = window.location.search;
-    const searchParams = new URLSearchParams(queryParamsString);
-    const queryParams = {};
 
-    // Iterate over each parameter and add it to the queryParams object
-    for (const [key, value] of searchParams.entries()) {
-        queryParams[key] = value;
+  var userID;
+  async function fetchUser() {
+    try {
+        const response = await fetch('/user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        console.log('User fetched:', data);
+        return data;
+    } catch (error) {
+        console.error('Error fetching user:', error);
     }
+  }
+ async function getUser(){
+  userId=await fetchUser();
 
-    return queryParams;
-}
-const params = getQueryParams();
-const userId = params.userId;
+ }
+ getUser();
 
-async function CheckAuthorize(){
-
-   try {
-    const response = await fetch('http://localhost:5000/auth/'+userId,{
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if(response.status!==200){
-        console.log("Unauthorized access Please login");
-        window.location.href = 'login.html';
-    }
-    
-    
-   } catch (error) {
-    console.log("Error",error);
-    window.location.href = 'login.html';
-    
-   }
-
-}
-
-
-
-if (!userId) {
-  console.log("Unauthorized access Please login");
-  window.location.href = 'login.html';
-}
-else{
-  CheckAuthorize();
   require([
     "esri/widgets/Sketch/SketchViewModel",
     "esri/widgets/support/SnappingControls",
@@ -93,10 +70,15 @@ else{
     const geoarea=document.getElementById("geodesicArea");
     let total_cost = 0;
 
+
+
+ 
+//   console.log("userId",userId);
+
     async function fetchGraphicsByUserId(userId) { 
       console.log("Fetching Graphics by userId");
       try {
-          const response = await fetch('http://localhost:5000/api/save-graphicLayer/'+userId, {
+          const response = await fetch('api/save-graphicLayer/'+userId, {
               method: 'GET',
               headers: {
                   'Content-Type': 'application/json'
@@ -222,7 +204,13 @@ else{
     polygonBtn.onclick = () => { sketchVM.create("polygon"); }
     circleBtn.onclick = () => { sketchVM.create("circle"); }
     rectangleBtn.onclick = () => { sketchVM.create("rectangle"); }
-    clearBtn.onclick = () => { sketchVM.layer.removeAll(); }
+    clearBtn.onclick = () => { 
+      sketchVM.layer.removeAll();
+      total_cost = 0;
+      UpdateLayerData();
+      geoarea.textContent = total_cost.toFixed(2); 
+    }
+
     selectBtn.onclick = () => { sketchVM.cancel(); }
   
     // Calcite UI logic
@@ -401,7 +389,7 @@ else{
     async function saveLayerData() {
       console.log("saveLayerData function called");
       try {
-          const response = await fetch('http://localhost:5000/api/save-graphicLayer', {
+          const response = await fetch('api/save-graphicLayer', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
@@ -421,7 +409,7 @@ else{
   async function UpdateLayerData() {
     console.log("UpdateLayerData function called");
     try {
-        const response = await fetch('http://localhost:5000/api/save-graphicLayer', {
+        const response = await fetch('api/save-graphicLayer', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -478,4 +466,4 @@ function computeCost(dimension, factor){
   });
   
 
-}
+
