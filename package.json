@@ -2,8 +2,9 @@
   "name": "your-project-name",
   "version": "1.0.0",
   "description": "Your project description",
+   "main": "App/server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node App/server.js",
     "dev": "nodemon App/server.js"
   },
   "devDependencies": {
