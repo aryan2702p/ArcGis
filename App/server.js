@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-
+require('dotenv').config();
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
@@ -20,8 +20,15 @@ const SignupRouter= require('./Routes/static/signup');
 // Connect to MongoDB
 // i have used my local mongodb connection (compass) to connect to the database
 
-mongoose.connect('mongodb://localhost:27017/ArcGis');
+const uri = process.env.MONGODB_URI;
 
+main().catch(err => console.log(err));
+
+async function main() {
+  await mongoose.connect(uri);
+
+  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
+}
 const app = express();
 // app.use(express.static('public'));
 app.use(cors({
