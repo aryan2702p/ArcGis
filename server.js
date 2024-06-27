@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 
 
 const store = new MongoDBStore({
-  uri: 'mongodb://localhost:27017/ArcGis',
+  uri: uri,
   collection: 'sessions',
 });
 
