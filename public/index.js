@@ -1,5 +1,5 @@
 
-  var userID;
+  var userId;
   async function fetchUser() {
     try {
         const response = await fetch('/user', {
@@ -15,11 +15,17 @@
         console.error('Error fetching user:', error);
     }
   }
- async function getUser(){
-  userId=await fetchUser();
-
- }
+  async function getUser() {
+    userId = await fetchUser();
+    if (userId) {
+      initializeMapAndAddGraphics();
+    } else {
+      console.error('User ID could not be fetched.');
+    }
+  }
  getUser();
+
+ function initializeMapAndAddGraphics(){
 
   require([
     "esri/widgets/Sketch/SketchViewModel",
@@ -60,14 +66,6 @@
     });
 
 
-    const pointBtn = document.getElementById("pointBtn");
-    const polylineBtn = document.getElementById("polylineBtn");
-    const polygonBtn = document.getElementById("polygonBtn");
-    const circleBtn = document.getElementById("circleBtn");
-    const rectangleBtn = document.getElementById("rectangleBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const selectBtn = document.getElementById("selectBtn");
-    const geoarea=document.getElementById("geodesicArea");
     let total_cost = 0;
 
 
@@ -117,6 +115,14 @@
 
 
     
+    const pointBtn = document.getElementById("pointBtn");
+    const polylineBtn = document.getElementById("polylineBtn");
+    const polygonBtn = document.getElementById("polygonBtn");
+    const circleBtn = document.getElementById("circleBtn");
+    const rectangleBtn = document.getElementById("rectangleBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const selectBtn = document.getElementById("selectBtn");
+    const geoarea=document.getElementById("geodesicArea");
   
     sketchVM.on("create", function(event) {
       
@@ -464,6 +470,7 @@ function computeCost(dimension, factor){
 
  
   });
+}
   
 
 
