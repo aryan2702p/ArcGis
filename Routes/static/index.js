@@ -3,9 +3,13 @@ const path = require('path');
 const router = express.Router();
 
 // Render index.html with user details if logged in
+
+
 router.get('/', (req, res) => {
-    console.log("indexrouter called");
+  console.log("indexrouter called");
+  
   if (req.session.userId) {
+  
     res.sendFile(path.join(__dirname, '../../public/index.html'));
   } else {
     res.redirect('/login');

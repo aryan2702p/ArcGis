@@ -62,7 +62,6 @@ app.use(session({
   },
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
 
 // static files route
 app.use('/', indexRouter.router);
@@ -75,6 +74,7 @@ app.use('/signup', SignupRouter.router);
   app.use('/api/save-feature',FeatureRouter.router);
   app.use('/api/save-graphic', GraphicRouter.router);
   app.use('/api/save-graphicLayer', GraphicLayerRouter.router);
+  app.use(express.static(path.join(__dirname, 'public')));
 
 
 
