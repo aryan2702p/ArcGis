@@ -72,7 +72,7 @@ app.use('/signup', SignupRouter.router);
 
   app.use('/auth',Authrouter.router);
   app.use('/api/save-feature',FeatureRouter.router);
-  app.use('/api/save-graphic', GraphicRouter.router);
+  app.use('/api/graphic', GraphicRouter.router);
   app.use('/api/save-graphicLayer', GraphicLayerRouter.router);
   app.use(express.static(path.join(__dirname, 'public')));
 

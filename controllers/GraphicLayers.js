@@ -20,10 +20,10 @@ exports.saveLayer=async (req, res)=>{
 exports.GetLayer=async (req, res)=>{
   const {userId} = req.params;
   try {
-    console.log("userId: " + userId);
+    
       const layer = await GraphicLayer.find({ user: userId });
       res.status(200).json(layer);
-      console.log("layer Fetched",layer);
+      console.log("layer Fetched");
     } catch (error) {
       console.log(error);
       res.status(500).send(error.message);
@@ -43,7 +43,7 @@ exports.UpdateLayer= async(req, res)=>{
       data: req.body.data,
       total_cost: totalCost
     };
-    console.log("layer data",req.body)
+    //console.log("layer data",req.body)
     const layer = await GraphicLayer.findOneAndUpdate(
       { user: req.body.userId },
       { $set: updateData },
@@ -51,7 +51,7 @@ exports.UpdateLayer= async(req, res)=>{
     );
     res.status(200).json(layer);
 
-    console.log('Updated GraphicLayer:', layer);
+    console.log('Updated GraphicLayer:');
   } catch (err) {
     console.error('Error updating GraphicLayer:', err);
     res.status(500).send(err.message);

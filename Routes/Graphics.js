@@ -1,6 +1,6 @@
 const express= require('express');
 
-const {saveGraphics,fetchGraphicsById}= require('../controllers/Graphics');
+const {saveGraphics,fetchGraphicsById,updateGraphic,deleteGraphics}= require('../controllers/Graphics');
 
 const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -9,6 +9,8 @@ const authMiddleware = require('../middlewares/authMiddleware');
 // router.use(authMiddleware);
 router.post('/', saveGraphics);
 router.get('/:userId', fetchGraphicsById);
+router.put('/:userId/:uid', updateGraphic);
+router.delete('/:userId/:uid', deleteGraphics);
 
 
 exports.router = router;

@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-  console.log("indexrouter called");
+ // console.log("indexrouter called");
   
   if (req.session.userId) {
   
@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/user', (req, res) => {
-    console.log("userroute called");
+   // console.log("userroute called");
   if (req.session.userId) {
     res.json(req.session.userId);
   } else {
