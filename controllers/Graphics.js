@@ -30,7 +30,7 @@ exports.updateGraphic = async (req, res) => {
       }
 
       Graphics.graphic = req.body.graphic;
-      Graphics.area = req.body.area;
+      Graphics.cost = req.body.cost;
 
       const updatedGraphic = await Graphics.save();
       res.json(updatedGraphic);
