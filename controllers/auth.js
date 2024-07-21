@@ -99,3 +99,13 @@ exports.checkUser = async (req, res) => {
  }
 
 };
+exports.logoutUser = async (req, res) => {
+  console.log("logout user");
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send('Failed to log out.');
+    }
+    res.clearCookie('connect.sid'); // Clear the session cookie
+    res.redirect('/login');
+  });
+};

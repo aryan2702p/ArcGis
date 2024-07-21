@@ -61,8 +61,8 @@ function initializeMapAndAddGraphics() {
     const view = new MapView({
       container: "viewDiv",
       map: map,
-      zoom: 7,
-      center: [-65.82579570034679, -37.385467010889435],
+      zoom: 5,
+      center: [77.2167, 28.6139], // New Delhi coordinates [longitude, latitude]
     });
 
     const sketchVM = new SketchViewModel({
@@ -322,6 +322,7 @@ function initializeMapAndAddGraphics() {
     const clearBtn = document.getElementById("clearBtn");
     const selectBtn = document.getElementById("selectBtn");
     const geoarea = document.getElementById("geodesicArea");
+    document.getElementById('logoutButton').addEventListener('click', logout);
 
     // Add the calcite-panel for the styler to an Expand to hide/show the panel
     const stylerExpand = new Expand({
@@ -651,7 +652,7 @@ function initializeMapAndAddGraphics() {
           console.log("Length: " + result.toFixed(2) + " kilometers");
       } else {
           console.log("Computation is not applicable for this geometry type.");
-          return null;
+          return 0;
       }
   
       return cost.toFixed(2);
@@ -660,5 +661,23 @@ function initializeMapAndAddGraphics() {
     function computeCost(dimension, factor) {
       return dimension * factor;
     }
+
+    async function logout() {
+      console.log("logout function called");
+      try {
+        const response = await fetch('/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        window.location.href = '/login'
+    
+      } catch (error) {
+        console.error('Error logging out:', error);
+      }
+    }
+    
+   
   });
 }
