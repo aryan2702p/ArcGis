@@ -354,6 +354,9 @@ function initializeMapAndAddGraphics() {
     const selectBtn = document.getElementById("selectBtn");
     const geoarea = document.getElementById("geodesicArea");
     document.getElementById('logoutButton').addEventListener('click', logout);
+    document.getElementById("basemapSelect").addEventListener("change", function(event) {
+      map.basemap = event.target.value;
+  });
 
     // Add the calcite-panel for the styler to an Expand to hide/show the panel
     const stylerExpand = new Expand({
@@ -448,15 +451,17 @@ function initializeMapAndAddGraphics() {
       let value;
       if (geometry.type === "polygon" || geometry.type === "circle") {
           value = geometryEngine.geodesicArea(geometry, "square-kilometers");
-          console.log("Area: " + value.toFixed(2) + " square kilometers");
+          showToast(`Area: ${value.toFixed(2)} square kilometers`, 'info');
+         // console.log("Area: " + value.toFixed(2) + " square kilometers");
       } else if (geometry.type === "polyline" || geometry.type === "line") {
           value = geometryEngine.geodesicLength(geometry, "kilometers");
-          console.log("Length: " + value.toFixed(2) + " kilometers");
+          showToast(`Length: ${value.toFixed(2)} kilometers`, 'info');
+          //console.log("Length: " + value.toFixed(2) + " kilometers");
       } else {
           console.log("Geometry type not supported for area/length computation.");
           value = 0;
       }
-      return value.toFixed(2);
+      
   }
 
   // Event listener for graphic clicks
@@ -467,8 +472,8 @@ function initializeMapAndAddGraphics() {
           })[0].graphic;
 
           if (graphic) {
-              const area = computeGeometryInfo(graphic.geometry);
-              showToast(`Area: ${area} square kilometers`, 'info');
+          computeGeometryInfo(graphic.geometry);
+              
           }
       });
   });

@@ -63,12 +63,37 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    #basemapSelect {
+      position: absolute;
+      top: 15px;
+      left: 60px;
+      background-color: white;
+      padding: 10px;
+      overflow-y: auto;
+      /* border-radius: 5px; */
+      cursor: pointer;
+      max-height: 50px;
+    }
   </style>
 
 </head>
 
 <body>
   <div id="viewDiv"></div>
+  <select id="basemapSelect">
+    <option value="streets">Streets</option>
+    <option value="satellite">Satellite</option>
+    <option value="hybrid" selected>Hybrid</option>
+    <option value="topo">Topographic</option>
+    <option value="gray">Gray</option>
+    <option value="dark-gray">Dark Gray</option>
+    <option value="oceans">Oceans</option>
+    <option value="national-geographic">National Geographic</option>
+    <option value="terrain">Terrain</option>
+    <option value="osm">OpenStreetMap</option>
+   
+
+</select>
   <div id="areaResults">
     Total Cost: Rs. <span id="geodesicArea"></span> 
   </div>
