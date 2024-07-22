@@ -51,3 +51,19 @@ exports.deleteGraphics = async (req, res) => {
       res.status(500).json({ message: error.message });
   }
 };
+
+exports.deleteAllGraphics = async (req, res) => {
+  try {
+      const Graphics = await GraphicObject.deleteMany({ userId: req.params.userId });
+      if (!Graphics) {
+          return res.status(404).json({ message: 'Graphics not found' });
+      }
+      console.log("All Graphics deleted");
+
+      res.json({ message: 'All Graphics deleted' });
+
+  } catch (error) {
+    console.log("Error in delete all graphics"+ error);
+      res.status(500).json({ message: error.message });
+  }
+};

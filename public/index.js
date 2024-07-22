@@ -72,7 +72,7 @@ function initializeMapAndAddGraphics() {
 
     let total_cost = 0;
     let graphicsJSON = [];
-    const uidMapping = {};
+    let uidMapping = {};
 
     // ========================>   Fetch Graphics by User Id <======================= //
 
@@ -159,6 +159,8 @@ function initializeMapAndAddGraphics() {
           total_cost += Number(cost);
           geoarea.textContent = total_cost.toFixed(2);
           UpdateLayerData();
+
+          showToast("Graphic created successfully!", 'success');
       }
   });
 
@@ -190,6 +192,7 @@ function initializeMapAndAddGraphics() {
   
               // Remove the mapping
               delete uidMapping[newUid];
+              showToast("Graphic deleted successfully!", 'success');
           } else {
               console.log("Graphic not found in stored data");
           }
@@ -225,6 +228,7 @@ function initializeMapAndAddGraphics() {
         
               // Update the graphic in the database
               updateGraphic(graphicsJSON[graphicIndex], initialUid);
+             //showToast("Graphic updated successfully!", 'success');
           } else {
               console.log("Graphic not found in stored data");
           }
@@ -263,6 +267,9 @@ function initializeMapAndAddGraphics() {
           },
           body: JSON.stringify(graphicObj),
         });
+        // if(response.status==200){
+        //   showToast("Graphic updated successfully!", 'success');
+        // }
         const data = await response.json();
         console.log("Graphic updated:", data);
       } catch (error) {
@@ -313,6 +320,30 @@ function initializeMapAndAddGraphics() {
         console.error("Error updated layer data:", error);
       }
     }
+
+    // ========================>   Delete All User Graphics <======================= //
+    async function deleteAllUserGraphics() {
+      try {
+          const response = await fetch(`/api/graphic/${userId}`, {
+              method: 'DELETE',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+  
+          if (!response.ok) {
+              throw new Error('Failed to delete graphics');
+          }
+  
+          const result = await response.json();
+          console.log('All user graphics deleted:', result);
+          return result;
+      } catch (error) {
+         // showToast('Failed to delete graphics', 'error');
+          console.error('Error deleting graphics:', error);
+          return null;
+      }
+  }
 
     const pointBtn = document.getElementById("pointBtn");
     const polylineBtn = document.getElementById("polylineBtn");
@@ -389,16 +420,58 @@ function initializeMapAndAddGraphics() {
     rectangleBtn.onclick = () => {
       sketchVM.create("rectangle");
     };
-    clearBtn.onclick = () => {
-      sketchVM.layer.removeAll();
-      total_cost = 0;
-      UpdateLayerData();
-      geoarea.textContent = total_cost.toFixed(2);
-    };
+    
+  
+  clearBtn.onclick = async () => {
+      const result = await deleteAllUserGraphics(userId);
+  
+      if (result) {
+          sketchVM.layer.removeAll();
+          total_cost = 0;
+          geoarea.textContent = total_cost.toFixed(2);
+  
+          // Clear the global graphicsJSON and uidMapping
+          graphicsJSON = [];
+          uidMapping = {};
+          showToast('Graphics cleared successfully!', 'success');
+      } else {
+        showToast('Failed to clear graphics from the server.', 'error');
+          console.error('Failed to clear graphics from the server.');
+      }
+  };
 
     selectBtn.onclick = () => {
       sketchVM.cancel();
     };
+
+    function computeGeometryInfo(geometry) {
+      let value;
+      if (geometry.type === "polygon" || geometry.type === "circle") {
+          value = geometryEngine.geodesicArea(geometry, "square-kilometers");
+          console.log("Area: " + value.toFixed(2) + " square kilometers");
+      } else if (geometry.type === "polyline" || geometry.type === "line") {
+          value = geometryEngine.geodesicLength(geometry, "kilometers");
+          console.log("Length: " + value.toFixed(2) + " kilometers");
+      } else {
+          console.log("Geometry type not supported for area/length computation.");
+          value = 0;
+      }
+      return value.toFixed(2);
+  }
+
+  // Event listener for graphic clicks
+  view.on("click", function (event) {
+      view.hitTest(event).then(function (response) {
+          const graphic = response.results.filter(function (result) {
+              return result.graphic.layer === graphicsLayer;
+          })[0].graphic;
+
+          if (graphic) {
+              const area = computeGeometryInfo(graphic.geometry);
+              showToast(`Area: ${area} square kilometers`, 'info');
+          }
+      });
+  });
 
     // Calcite UI logic
     // Auto-populate UI with default SketchViewModel properties set.
@@ -582,62 +655,7 @@ function initializeMapAndAddGraphics() {
       document.getElementById(id).open = true;
     }
 
-    async function saveLayerData() {
-      console.log("saveLayerData function called");
-      try {
-        const response = await fetch("api/save-graphicLayer", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: graphicsLayer.toJSON(),
-            userId: userId,
-          }),
-        });
-        // if(response.status === 401){
-        //     window.location.href = 'login.html';
-        // }
-        const data = await response.json();
-        console.log("Layer saved:", data);
-      } catch (error) {
-        console.error("Error saving layer data:", error);
-      }
-    }
-
-    // Function to compute and display area for polygons/circles
-    function computeAndDisplayArea(geometry) {
-      var area;
-      var cost;
-      if (geometry.type === "polygon" || geometry.type === "circle") {
-        area = geometryEngine.geodesicArea(geometry, "square-kilometers");
-        cost = computeCost(area, 10);
-        console.log("Area: " + area.toFixed(2) + " square kilometers");
-
-        return cost.toFixed(2);
-      } else {
-        console.log(
-          "Area computation is not applicable for this geometry type."
-        );
-      }
-    }
-
-    // Function to compute and display length for lines/polylines
-    function computeAndDisplayLength(geometry) {
-      var length;
-      var cost;
-      if (geometry.type === "polyline" || geometry.type === "line") {
-        length = geometryEngine.geodesicLength(geometry, "kilometers");
-        cost = computeCost(length, 5);
-        console.log("Length: " + length.toFixed(2) + " kilometers");
-
-        return cost.toFixed(2);
-      } else {
-        console.log(
-          "Length computation is not applicable for this geometry type."
-        );
-      }
-    }
+    // ========================>   Compute and Display Cost <======================= //
     function computeAndDisplayCost(geometry) {
       let result;
       let cost;
@@ -671,11 +689,23 @@ function initializeMapAndAddGraphics() {
             'Content-Type': 'application/json'
           }
         });
+        
         window.location.href = '/login'
+       
     
       } catch (error) {
         console.error('Error logging out:', error);
       }
+    }
+    function showToast(message, type) {
+      Toastify({
+        text: message,
+        duration: 3000, // Duration in milliseconds
+        close: true, // Show close button
+        gravity: "top", // `top` or `bottom`
+        position: "center", // `left`, `center` or `right`
+        backgroundColor: type === 'success' ? "green" : type === 'error' ? "red" : type === 'info' ? "blue" : "blue",
+      }).showToast();
     }
     
    
