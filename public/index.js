@@ -73,6 +73,8 @@ function initializeMapAndAddGraphics() {
     let total_cost = 0;
     let graphicsJSON = [];
     let uidMapping = {};
+    let areaCostFactor = 10; // Default value
+    let lengthCostFactor = 5; // Default value
 
     // ========================>   Fetch Graphics by User Id <======================= //
 
@@ -667,11 +669,11 @@ function initializeMapAndAddGraphics() {
   
       if (geometry.type === "polygon" || geometry.type === "circle") {
           result = geometryEngine.geodesicArea(geometry, "square-kilometers");
-          cost = computeCost(result, 10);
+          cost = computeCost(result, areaCostFactor);
           console.log("Area: " + result.toFixed(2) + " square kilometers");
       } else if (geometry.type === "polyline" || geometry.type === "line") {
           result = geometryEngine.geodesicLength(geometry, "kilometers");
-          cost = computeCost(result, 5);
+          cost = computeCost(result, lengthCostFactor);
           console.log("Length: " + result.toFixed(2) + " kilometers");
       } else {
           console.log("Computation is not applicable for this geometry type.");
@@ -712,6 +714,30 @@ function initializeMapAndAddGraphics() {
         backgroundColor: type === 'success' ? "green" : type === 'error' ? "red" : type === 'info' ? "blue" : "blue",
       }).showToast();
     }
+
+    const toggleButton = document.getElementById('toggleButton');
+    const factorContainer = document.getElementById('factorContainer');
+    
+    // Toggle button click event
+    toggleButton.addEventListener('click', () => {
+        if (factorContainer.classList.contains('show')) {
+            factorContainer.classList.remove('show');
+            toggleButton.textContent = 'Show Cost Factors';
+        } else {
+            factorContainer.classList.add('show');
+            toggleButton.textContent = 'Hide Cost Factors';
+        }
+    });
+    document.getElementById('updateFactors').addEventListener('click', () => {
+      const areaInput = document.getElementById('areaFactor');
+      const lengthInput = document.getElementById('lengthFactor');
+
+      areaCostFactor = parseFloat(areaInput.value) || areaCostFactor;
+      lengthCostFactor = parseFloat(lengthInput.value) || lengthCostFactor;
+
+      console.log(`Updated Area Cost Factor: ${areaCostFactor}`);
+      console.log(`Updated Length Cost Factor: ${lengthCostFactor}`);
+  });
     
    
   });

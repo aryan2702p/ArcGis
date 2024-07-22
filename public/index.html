@@ -12,7 +12,7 @@
   <script src="https://js.arcgis.com/4.29/"></script>
 
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 
   <style>
@@ -24,6 +24,7 @@
       height: 100%;
       width: 100%;
     }
+
     .scrollSection {
       overflow: scroll;
       width: inherit;
@@ -31,13 +32,16 @@
       overflow-x: hidden;
       padding: 0.3em;
     }
+
     #sketchVM-controls {
       width: 125%;
       height: 300px;
     }
+
     #headingBlock {
       padding-right: 2em;
     }
+
     #areaResults {
       position: absolute;
       bottom: 30px;
@@ -49,9 +53,11 @@
       border: 1px solid #ccc;
     }
 
-    #geodesicArea, #planarArea {
+    #geodesicArea,
+    #planarArea {
       margin-bottom: 5px;
     }
+
     #logoutButton {
       position: absolute;
       bottom: 30px;
@@ -63,6 +69,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     #basemapSelect {
       position: absolute;
       top: 15px;
@@ -74,12 +81,71 @@
       cursor: pointer;
       max-height: 50px;
     }
+
+    #factorContainer {
+      position: absolute;
+      top: 15px;
+      left: 260px;
+      background-color: white;
+      color: black;
+      padding: 10px;
+      max-height: fit-content;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      transition: max-height 0.3s ease-out;
+    }
+
+    #factorContainer.show {
+            opacity: 1;
+        }
+
+ #updateFactors {
+      background-color: #f5f8f9;
+      color: rgb(17, 17, 17);
+      padding: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #toggleButton {
+      position: absolute;
+      bottom: 35px;
+      left: 400px;
+      background-color: white;
+    
+      /* background-color: #0079c1; */
+      /* color: white; */
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 
 </head>
 
 <body>
   <div id="viewDiv"></div>
+  <button id="toggleButton">Show Cost Factors</button>
+
+  <div id="factorContainer">
+    <div>
+      <label for="areaFactor">Cost Factor for Area (per square kilometer) in Rs:</label>
+    <input type="number" id="areaFactor" value="10" step="0.1">
+    </div>
+    
+ 
+    <div>
+      <label for="lengthFactor">Cost Factor for Length (per kilometer) in Rs:</label>
+      <input type="number" id="lengthFactor" value="5" step="0.1">
+    </div>
+   
+ 
+    <button id="updateFactors">Update Factors</button>
+  </div>
   <select id="basemapSelect">
     <option value="streets">Streets</option>
     <option value="satellite">Satellite</option>
@@ -91,13 +157,13 @@
     <option value="national-geographic">National Geographic</option>
     <option value="terrain">Terrain</option>
     <option value="osm">OpenStreetMap</option>
-   
 
-</select>
+
+  </select>
   <div id="areaResults">
-    Total Cost: Rs. <span id="geodesicArea"></span> 
+    Total Cost: Rs. <span id="geodesicArea"></span>
   </div>
-  <div id ="logoutButton">Logout</div>
+  <div id="logoutButton">Logout</div>
   <calcite-panel heading="SketchViewModel Styler" id="propPanel">
     <calcite-block id="headingBlock">
       <calcite-action icon="cursor" title="Select graphic" scale="s" slot="control" id="selectBtn"></calcite-action>
@@ -172,7 +238,8 @@
             <calcite-button id="point-outline-btn" scale="s">Set Outline</calcite-button>
           </calcite-label>
           <calcite-label>size
-            <calcite-input id="point-size-input" placeholder="Placeholder" type="number" scale="s" min=0></calcite-input>
+            <calcite-input id="point-size-input" placeholder="Placeholder" type="number" scale="s"
+              min=0></calcite-input>
           </calcite-label>
           <calcite-label>xoffset
             <calcite-input id="point-xoffset-input" placeholder="Placeholder" type="number" scale="s"></calcite-input>
@@ -229,7 +296,8 @@
           </calcite-select>
         </calcite-label>
         <calcite-label>width
-          <calcite-input min="0" placeholder="Placeholder" type="number" scale="s" id="line-width-input"></calcite-input>
+          <calcite-input min="0" placeholder="Placeholder" type="number" scale="s"
+            id="line-width-input"></calcite-input>
         </calcite-label>
         <calcite-label>color
           <calcite-input placeholder="Placeholder" type="color" scale="s" id="line-color-input" format="rgb">
@@ -257,7 +325,8 @@
       </calcite-value-list-item>
       <calcite-value-list-item label="Delete" description="Remove the selected graphic(s) from the layer.">
       </calcite-value-list-item>
-      <calcite-value-list-item label="Shift+Left-click" description="Select multiple graphics."></calcite-value-list-item>
+      <calcite-value-list-item label="Shift+Left-click"
+        description="Select multiple graphics."></calcite-value-list-item>
     </calcite-value-list>
   </calcite-panel>
 
@@ -310,4 +379,5 @@
 
   <script src="index.js"></script>
 </body>
+
 </html>
